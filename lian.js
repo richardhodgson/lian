@@ -30,7 +30,7 @@ Store.prototype.insert = function (ob) {
             promise.fail(err);
         }
         else {
-            promise.resolve(doc);
+            promise.resolve(ob);
         }
     });
     return promise;

@@ -33,7 +33,7 @@ Collection.prototype.insert = function (ob, callback) {
 
         this._data[key][ob[key]] = ob;
     }
-    promise.fulfill.call(promise, false, callback);
+    promise.fulfill.call(promise, false, ob);
     return promise
 }
 
