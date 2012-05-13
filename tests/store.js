@@ -63,6 +63,9 @@ exports.test = new litmus.Test('store', function () {
             this.$ = "person";
             this.name = name;
         }
+        Person.prototype.getName = function () {
+            return this.name;
+        }
 
         var jack = new Person("jack"),
             jill = new Person("jill");
@@ -82,10 +85,12 @@ exports.test = new litmus.Test('store', function () {
             test.is(typeof result['then'], 'function', 'find returns a promise');
 
             result.then(function (results) {
-
                 test.is(results.length, 1, 'One result is returned');
+
                 test.is(results[0]._id, '1', 'Result has id populated from db');
                 test.is(results[0].gender, 'male', 'Data is retrieved from store and returned as object');
+                test.isa(results[0], Person, 'Result is expected type');
+                test.is(results[0].getName(), 'jack', 'Returned object instance methods are populate');
 
                 complete.resolve();
             }); 

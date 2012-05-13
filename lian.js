@@ -6,12 +6,24 @@ var OBJECT_NAME_PROPERTY = '$',
 function _serialise (ob) {
     ob[STORED_OBJECT_NAME_PROPERTY] = ob[OBJECT_NAME_PROPERTY];
     delete ob[OBJECT_NAME_PROPERTY];
-    return ob;
+
+    var dataSet = {};
+    for (key in ob) {
+        if (typeof ob[key] != 'function') {
+            dataSet[key] = ob[key];
+        }
+    }
+    return dataSet;
 }
 
-function _deserialise (ob) {
-    ob[OBJECT_NAME_PROPERTY] = ob[STORED_OBJECT_NAME_PROPERTY];
-    delete ob[STORED_OBJECT_NAME_PROPERTY];
+function _deserialise (constructor, dataSet) {
+    dataSet[OBJECT_NAME_PROPERTY] = dataSet[STORED_OBJECT_NAME_PROPERTY];
+    delete dataSet[STORED_OBJECT_NAME_PROPERTY];
+
+    ob = new constructor();
+    for (key in dataSet) {
+        ob[key] = dataSet[key];
+    }
     return ob;
 }
 
@@ -47,9 +59,7 @@ Store.prototype.insert = function (ob) {
             promise.fail(err);
         }
         else {
-            // TODO I think this should return doc...
-            // so the _id is populate properly
-            promise.resolve(ob);
+            promise.resolve(_deserialise(ob.constructor, doc));
         }
     });
     return promise;
@@ -59,17 +69,18 @@ Store.prototype.find = function (ob) {
     var promise    = new Promise(),
         collection = this.getCollectionForObject(ob);
 
-    collection.find(_serialise(ob), function (err, results) {
-        for (key in results) {
-            results[key] = _deserialise(results[key]);
-        }
-
+    collection.find(_serialise(ob), function (err, doc) {
         if (err) {
             promise.fail(err);
+            return;
         }
-        else {
-            promise.resolve(results);
+
+        var results = [];
+        for (key in doc) {
+            results[key] = _deserialise(ob.constructor, doc[key]);
         }
+
+        promise.resolve(results);
     });
     return promise;
 }

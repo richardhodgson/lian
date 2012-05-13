@@ -26,23 +26,32 @@ Collection.prototype.insert = function (ob, callback) {
 
     ob._id = this._lastId;
 
+    var dataSet = {};
+    for (key in ob) {
+        dataSet[key] = ob[key];
+    }
+
     for (key in ob) {
         if (! this._data[key]) {
             this._data[key] = {};
         }
-        this._data[key][ob[key]] = ob;
+        this._data[key][ob[key]] = dataSet;
     }
+
     promise.fulfill.call(promise, false, ob);
+
     return promise;
 }
 
 Collection.prototype.find = function (ob, callback) {
 
-    var promise = new Promise(this, 'insert');
+    var promise = new Promise(this, 'find');
     promise.complete(callback);
 
     var results = [],
         lookup = {};
+
+
 
     for (key in ob) {
         if (this._data[key]) {
@@ -56,6 +65,7 @@ Collection.prototype.find = function (ob, callback) {
 
                 for (k in ob) {
                     if (!candidate[k] || candidate[k] != ob[k]) {
+                        
                         candidate = null;
                         break;
                     }
