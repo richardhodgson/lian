@@ -1,0 +1,23 @@
+{
+    "author": "Richard Hodgson <contact@rhodgson.co.uk> (http://rhodgson.co.uk)",
+    "name": "lian",
+    "description": "Simple object persistence with MongoDB",
+    "version": "0.0.0",
+    "repository": {
+        "url": ""
+    },
+    "main": "lian",
+    "scripts": {
+        "test": "make test"
+    },
+    "engines": {
+        "node": "~0.4.7"
+    },
+    "dependencies": {
+        "promised-io": ">=0.2.3",
+        "monk": ">=0.1.8"
+    },
+    "devDependencies": {
+        "litmus": ">=0.3.0"
+    }
+}
