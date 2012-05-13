@@ -30,11 +30,47 @@ Collection.prototype.insert = function (ob, callback) {
         if (! this._data[key]) {
             this._data[key] = {};
         }
-
         this._data[key][ob[key]] = ob;
     }
     promise.fulfill.call(promise, false, ob);
-    return promise
+    return promise;
+}
+
+Collection.prototype.find = function (ob, callback) {
+
+    var promise = new Promise(this, 'insert');
+    promise.complete(callback);
+
+    var results = [],
+        lookup = {};
+
+    for (key in ob) {
+        if (this._data[key]) {
+            if (this._data[key][ob[key]]) {
+
+                var candidate = this._data[key][ob[key]];
+
+                if (lookup[candidate._id]) {
+                    break;
+                }
+
+                for (k in ob) {
+                    if (!candidate[k] || candidate[k] != ob[k]) {
+                        candidate = null;
+                        break;
+                    }
+                }
+
+                if (candidate) {
+                    lookup[candidate._id] = true;
+                    results.push(candidate);
+                }
+            }
+        }
+    }
+
+    promise.fulfill.call(promise, false, results);
+    return promise;
 }
 
 module.exports = Db;
