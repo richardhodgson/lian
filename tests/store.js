@@ -21,12 +21,12 @@ exports.test = new litmus.Test('store', function () {
         function () {
             store.insert(Thing);
         },
-        /name/,
-        'Inserting something without a name property throws an error'
+        /property/,
+        'Inserting something without a $ property throws an error'
     );
 
     Thing = function () {
-        this.name = 'Thing';
+        this.$ = 'Thing';
     }
 
     test.async('test object is inserted', function (complete) {
@@ -37,8 +37,6 @@ exports.test = new litmus.Test('store', function () {
         test.is(typeof result['then'], 'function', 'insert returns a promise');
 
         result.then(function (thing) {
-            log(thing.toString());
-
             test.ok(thing._id, 'object now has an id');
 
         });

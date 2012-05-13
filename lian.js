@@ -1,5 +1,7 @@
 var Promise = require('promised-io/promise').Promise;
 
+var OBJECT_NAME_PROPERTY = '$';
+
 function Store (uri) {
     this._uri = uri;
 }
@@ -16,14 +18,16 @@ Store.prototype.setMonk = function (monk) {
     this._monk = monk;
 }
 
-Store.prototype.insert = function (ob) {
-    if (! ob.name) {
-        throw new Error('Expected object passed to have name property');
+Store.prototype.getCollectionForObject = function (ob) {
+    if (! ob[OBJECT_NAME_PROPERTY]) {
+        throw new Error('Expected object passed to have ' + OBJECT_NAME_PROPERTY + ' property');
     }
-    var monk = this.getMonk(),
-        promise = new Promise();
+    return this.getMonk().get(ob[OBJECT_NAME_PROPERTY]);
+}
 
-    var collection = monk.get(ob.name);
+Store.prototype.insert = function (ob) {
+    var promise = new Promise(),
+        collection = this.getCollectionForObject(ob);
 
     collection.insert(ob, function (err, doc) {
         if (err) {
