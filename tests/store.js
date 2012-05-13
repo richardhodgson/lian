@@ -7,8 +7,16 @@ exports.test = new litmus.Test('store', function () {
     var store = new Store();
     store.setMonk(mock_monk)
 
-    console.log(store);
-
     this.is(store.getMonk(), mock_monk, 'Can mock monk');
+
+    var Thing = {}
+
+    this.throwsOk(
+        function () {
+            store.insert(Thing);
+        },
+        /name/,
+        'Inserting something without a name property throws an error'
+    );
 });
 

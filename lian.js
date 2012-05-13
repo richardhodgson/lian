@@ -13,5 +13,10 @@ Store.prototype.setMonk = function (monk) {
     this._monk = monk;
 }
 
+Store.prototype.insert = function (ob) {
+    if (! ob.name) {
+        throw new Error('Expected object passed to have name property');
+    }
+}
 
 exports.Store = Store;
