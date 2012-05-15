@@ -35,7 +35,12 @@ Collection.prototype.insert = function (ob, callback) {
         if (! this._data[key]) {
             this._data[key] = {};
         }
-        this._data[key][ob[key]] = dataSet;
+
+        if (! this._data[key][ob[key]]) {
+            this._data[key][ob[key]] = [];
+        }
+
+        this._data[key][ob[key]].push(dataSet);
     }
 
     promise.fulfill.call(promise, false, ob);
@@ -57,23 +62,28 @@ Collection.prototype.find = function (ob, callback) {
         if (this._data[key]) {
             if (this._data[key][ob[key]]) {
 
-                var candidate = this._data[key][ob[key]];
+                var candidates = this._data[key][ob[key]];
 
-                if (lookup[candidate._id]) {
-                    break;
-                }
-
-                for (k in ob) {
-                    if (!candidate[k] || candidate[k] != ob[k]) {
-                        
-                        candidate = null;
+        for (c in candidates) {
+    
+                    var candidate = candidates[c];
+        
+                    if (lookup[candidate._id]) {
                         break;
                     }
-                }
 
-                if (candidate) {
-                    lookup[candidate._id] = true;
-                    results.push(candidate);
+                    for (k in ob) {
+                        if (!candidate[k] || candidate[k] != ob[k]) {
+                            
+                            candidate = null;
+                            break;
+                        }
+                    }
+
+                    if (candidate) {
+                        lookup[candidate._id] = true;
+                        results.push(candidate);
+                    }
                 }
             }
         }
