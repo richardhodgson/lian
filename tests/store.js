@@ -59,38 +59,46 @@ exports.test = new litmus.Test('store', function () {
         var store = new Store();
         store.setMonk(new mock_monk());
 
-        function Person (name) {
+        function Person () {
             this.$ = "person";
-            this.name = name;
         }
         Person.prototype.getName = function () {
             return this.name;
         }
 
-        var jack = new Person("jack"),
-            jill = new Person("jill");
+        var jack = new Person(),
+            john = new Person(),
+            jill = new Person();
+
+        jack.name = "jack";
+        john.name = "john";
+        jill.name = "jill";
 
         jack.gender = "male";
+        john.gender = "male";
         jill.gender = "female";
 
         after(
             store.insert(jack),
+            store.insert(john),
             store.insert(jill)
         ).then(function () {
 
-            jack = new Person("jack");
+            var man = new Person();
+            man.gender = "male";
 
-            var result = store.find(jack);
+            var result = store.find(man);
 
             test.is(typeof result['then'], 'function', 'find returns a promise');
 
             result.then(function (results) {
-                test.is(results.length, 1, 'One result is returned');
+                test.is(results.length, 2, 'Expected number of results are returned');
 
                 test.is(results[0]._id, '1', 'Result has id populated from db');
                 test.is(results[0].gender, 'male', 'Data is retrieved from store and returned as object');
                 test.isa(results[0], Person, 'Result is expected type');
                 test.is(results[0].getName(), 'jack', 'Returned object instance methods are populate');
+                test.is(results[1].getName(), 'john', 'Multiple results are mapped to an object instance');
 
                 complete.resolve();
             }); 
