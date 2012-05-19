@@ -93,7 +93,7 @@ exports.test = new litmus.Test('store', function () {
 
             result.then(function (results) {
                 test.is(results.length, 2, 'Expected number of results are returned');
-
+                
                 test.is(results[0]._id, '1', 'Result has id populated from db');
                 test.is(results[0].gender, 'male', 'Data is retrieved from store and returned as object');
                 test.isa(results[0], Person, 'Result is expected type');
@@ -147,7 +147,7 @@ exports.test = new litmus.Test('store', function () {
 
                         man = new Person();
                         man.name = "john";
-                        
+
                         store.find(man).then(function (results) {
                             test.is(results.length, 1, 'Updated object can be found');
                             test.is(results[0].gender, 'male', 'gender key is still the same');

@@ -31,26 +31,17 @@ Collection.prototype.insert = function (ob, callback) {
     promise.complete(callback);
 
     this._lastId++;
-
-    ob._id = this._lastId;
+    var id = this._lastId;
 
     var dataSet = copy(ob);
+    dataSet._id = id;
 
-    for (key in ob) {
-        var value = ob[key];
-        if (! this._data[key]) {
-            this._data[key] = {};
-        }
-
-        if (! this._data[key][value]) {
-            this._data[key][value] = [];
-        }
-
-        this._data[key][value].push(dataSet);
+    if (this._data[id]) {
+        throw new Error("cannot insert object, _id already exists");
     }
 
-    promise.fulfill.call(promise, false, ob);
-
+    this._data[id] = dataSet;
+    promise.fulfill.call(promise, false, copy(dataSet));
     return promise;
 }
 
@@ -62,36 +53,28 @@ Collection.prototype.find = function (ob, callback) {
     var results = [],
         lookup = {};
 
-    for (key in ob) {
-        if (this._data[key]) {
+    var keys = [];
+    for (var key in ob) {
+        keys.push(key);
+    }
 
-            var value = ob[key];
+    var targetKey = keys.pop();
 
-            if (this._data[key][value]) {
+    for (var id in this._data) {
+        var candidate = this._data[id];
+        if (candidate[targetKey] && candidate[targetKey] == ob[targetKey]) {
+            // test rest of values
 
-                var candidates = this._data[key][value];
-
-                for (c in candidates) {
-    
-                    var candidate = candidates[c];
-        
-                    if (lookup[candidate._id]) {
-                        break;
-                    }
-
-                    for (k in ob) {
-                        if (!candidate[k] || candidate[k] != ob[k]) {
-                            
-                            candidate = null;
-                            break;
-                        }
-                    }
-
-                    if (candidate) {
-                        lookup[candidate._id] = true;
-                        results.push(copy(candidate));
-                    }
+            for (var i = 0, l = keys.length; i < l; i++) {
+                var key = keys[i];
+                if (!candidate[key] || candidate[key] != ob[key]) {
+                    candidate = null;
+                    break;
                 }
+            }
+
+            if (candidate) {
+                results.push(candidate);
             }
         }
     }
@@ -104,35 +87,15 @@ Collection.prototype.update = function (ob, callback) {
     var promise = new Promise(this, 'update');
     promise.complete(callback);
 
-    var id = ob._id,
-        candidate = this._data['_id'][id];
+    var id = ob._id;
 
-    if (! candidate) {
-        throw new Error("todo");
+    if (! this._data[id]) {
+        throw new Error("cannot find object _id to update, try inserting instead");
     }
 
-    var data = this._data;
+    this._data[id] = copy(ob);
 
-    for (var key in data) {
-        for (var value in data[key]) {
-            var candidates = data[key][value];
-            for (var i = 0, l = candidates.length; i < l; i++) {
-                var candidate = candidates[i];
-                if (candidate._id == id) {
-
-                    if (ob[key] && ob[key] == value) {
-                        data[key][value][i] = ob;
-                    }
-                    else {
-                        // delete candidate
-                        delete data[key][value][i];
-                    }
-                }
-            }
-        }
-    }
-
-    promise.fulfill.call(promise, false, {});
+    promise.fulfill.call(promise, false, copy(this._data[id]));
     return promise;
 }
 
