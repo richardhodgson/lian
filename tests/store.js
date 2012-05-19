@@ -27,7 +27,7 @@ exports.test = new litmus.Test('store', function () {
     );
 
     Thing = function () {
-        this.$ = 'Thing';
+        Thing.lian = {name: 'Thing'};
     }
 
     test.async('test object is inserted', function (complete) {
@@ -60,7 +60,7 @@ exports.test = new litmus.Test('store', function () {
         store.setMonk(new mock_monk());
 
         function Person () {
-            this.$ = "person";
+            Person.lian = {name: 'person'};
         }
         Person.prototype.getName = function () {
             return this.name;
@@ -111,7 +111,7 @@ exports.test = new litmus.Test('store', function () {
         store.setMonk(new mock_monk());
 
         function Person () {
-            this.$ = "person";
+            Person.lian = {name: 'person'};
         }
         
         var jack = new Person();
@@ -166,7 +166,7 @@ exports.test = new litmus.Test('store', function () {
         store.setMonk(new mock_monk());
 
         function Person () {
-            this.$ = "person";
+            Person.lian = {name: 'person'};
         }
         
         var jack = new Person();
