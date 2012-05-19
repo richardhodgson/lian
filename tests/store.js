@@ -159,4 +159,36 @@ exports.test = new litmus.Test('store', function () {
             }); 
         });
     });
+
+    test.async('test object can be saved', function (complete) {
+
+        var store = new Store();
+        store.setMonk(new mock_monk());
+
+        function Person () {
+            this.$ = "person";
+        }
+        
+        var jack = new Person();
+        jack.name = "jack";
+
+        store.save(jack).then(function (result) {
+
+            test.ok(result._id, 'object is inserted');
+
+            store.find(jack).then(function (results) {
+                test.is(results.length, 1, 'Expected number of results are returned');
+
+                results[0].gender = "male";
+
+                store.update(results[0]).then(function () {
+                    store.find(jack).then(function (results) {
+
+                        test.is(results[0].gender, 'male', 'gender key is saved');
+                        complete.resolve(); 
+                    });
+                });
+            }); 
+        });
+    });
 });

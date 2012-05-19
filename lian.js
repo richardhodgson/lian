@@ -103,4 +103,9 @@ Store.prototype.update = function (ob) {
     return promise;
 }
 
+Store.prototype.save = function (ob) {
+    var methodName = (ob._id) ? 'update' : 'insert';
+    return this[methodName](ob);
+}
+
 exports.Store = Store;
