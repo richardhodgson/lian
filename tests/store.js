@@ -1,6 +1,6 @@
 var litmus = require('litmus'),
     mock_monk = require('./mock/monk'),
-    Store = require('../lian').Store,
+    Store = require('../lib/store'),
     after = require('promised-io/promise').all;
 
 function log (o) {
