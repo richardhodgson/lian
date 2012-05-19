@@ -1,6 +1,5 @@
 # Todo
 
-- `update()`
 - `save()` (proxy to insert or update appropriatly, as I'm lazy)
 - `findOne()`
 - move store to own module (i.e. 'lian/store')
