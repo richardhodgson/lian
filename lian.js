@@ -4,15 +4,14 @@ var OBJECT_NAME_PROPERTY = '$',
     STORED_OBJECT_NAME_PROPERTY = '_lian_name';
 
 function _serialise (ob) {
-    ob[STORED_OBJECT_NAME_PROPERTY] = ob[OBJECT_NAME_PROPERTY];
-    delete ob[OBJECT_NAME_PROPERTY];
-
     var dataSet = {};
     for (key in ob) {
         if (typeof ob[key] != 'function') {
             dataSet[key] = ob[key];
         }
     }
+    dataSet[STORED_OBJECT_NAME_PROPERTY] = dataSet[OBJECT_NAME_PROPERTY];
+    delete dataSet[OBJECT_NAME_PROPERTY];
     return dataSet;
 }
 
@@ -57,10 +56,10 @@ Store.prototype.insert = function (ob) {
     collection.insert(_serialise(ob), function (err, doc) {
         if (err) {
             promise.fail(err);
+            return;
         }
-        else {
-            promise.resolve(_deserialise(ob.constructor, doc));
-        }
+
+        promise.resolve(_deserialise(ob.constructor, doc));
     });
     return promise;
 }
@@ -81,6 +80,25 @@ Store.prototype.find = function (ob) {
         }
 
         promise.resolve(results);
+    });
+    return promise;
+}
+
+Store.prototype.update = function (ob) {
+    if (! ob._id) {
+        throw new Error("cannot update an object without an _id property");
+    }
+
+    var promise    = new Promise(),
+        collection = this.getCollectionForObject(ob);
+
+    collection.update(_serialise(ob), function (err, doc) {
+        if (err) {
+            promise.fail(err);
+            return;
+        }
+        
+        promise.resolve(_deserialise(ob.constructor, doc));
     });
     return promise;
 }

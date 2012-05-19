@@ -104,4 +104,59 @@ exports.test = new litmus.Test('store', function () {
             }); 
         });
     });
+
+    test.async('test object can be updated', function (complete) {
+
+        var store = new Store();
+        store.setMonk(new mock_monk());
+
+        function Person () {
+            this.$ = "person";
+        }
+        
+        var jack = new Person();
+        jack.name = "jack";
+        jack.gender = "male";
+
+        test.throwsOk(
+            function () {
+                store.update(jack);
+            },
+            /cannot update/,
+            'Cannot call update with an object without an id'
+        );
+
+        store.insert(jack).then(function () {
+
+            var man = new Person();
+            man.name = "jack";
+
+            store.find(man).then(function (results) {
+                test.is(results.length, 1, 'Expected number of results are returned');
+
+                var jack_found = results[0];
+                jack_found.name = "john";
+
+                var result = store.update(jack_found);
+
+                test.is(typeof result['then'], 'function', 'update returns a promise');
+
+                result.then(function () {
+                    store.find(man).then(function (results) {
+                        test.is(results.length, '0', 'Old object cannot be found anymore');
+
+                        man = new Person();
+                        man.name = "john";
+                        
+                        store.find(man).then(function (results) {
+                            test.is(results.length, 1, 'Updated object can be found');
+                            test.is(results[0].gender, 'male', 'gender key is still the same');
+
+                            complete.resolve();
+                        });
+                    });
+                });
+            }); 
+        });
+    });
 });
