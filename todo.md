@@ -1,6 +1,5 @@
 # Todo
 
-- `save()` (proxy to insert or update appropriatly, as I'm lazy)
 - `findOne()`
 - move store to own module (i.e. 'lian/store')
 - main lian module will return a function that expects either a...
