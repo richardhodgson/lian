@@ -38,8 +38,21 @@ exports.test = new litmus.Test('Main lian api', function () {
                 complete.resolve();
             });
         });
-    });
 
+
+        function Car () {
+            lian(this, 'car');
+        }
+        Car.prototype.insert = function() {};
+
+        test.throwsOk(
+            function () {
+                new Car();
+            },
+            /already defined/,
+            'Cannot add mixin methods if one is already defined'
+        );
+    });
 
     this.async('test decoupled api', function (complete) {
 
