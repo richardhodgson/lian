@@ -2,7 +2,7 @@
 
 Simple object persistence for node.js with MongoDB.
 
-    var lian = require('lian')('localhost');
+    var lian = require('lian')('localhost/lianexample');
 
     function Person (name) {
         lian(this, 'person');
@@ -47,7 +47,7 @@ Decoupled, lian's `Store` object can be used directly.
 
     typeof steve.insert // "undefined"
 
-    var store = new Store('localhost');
+    var store = new Store('localhost/lianexample');
     store.insert(steve);
 
 # Goals
