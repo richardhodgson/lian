@@ -14,8 +14,8 @@
         "node": "~0.4.7"
     },
     "dependencies": {
-        "promised-io": ">=0.2.3",
-        "monk": ">=0.1.8"
+        "promised-io": ">=0.3.0",
+        "monk": ">=0.1.9"
     },
     "devDependencies": {
         "litmus": ">=0.3.0"
