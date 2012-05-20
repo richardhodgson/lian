@@ -7,7 +7,7 @@ function log (o) {
     console.log(o);
 }
 
-exports.test = new litmus.Test('store', function () {
+exports.test = new litmus.Test('Store module tests', function () {
 
     var test = this;
 
