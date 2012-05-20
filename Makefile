@@ -1,5 +1,4 @@
-SHELL=/bin/bash
-
+SHELL = /bin/bash
 MONGO_CHECK = $(shell lsof -i :27017 | grep mongo)
 
 test:
@@ -15,3 +14,5 @@ mongo-check:
 	else \
 		echo "Using Mongo running on port 27017..."; \
 	fi
+
+.PHONY: test integration-test mongo-check
