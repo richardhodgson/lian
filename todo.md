@@ -2,6 +2,7 @@
 
 - `findOne()`
 - hooks (see below)
+- fix integration tests not finishing properly
 
 ## Future api
 
