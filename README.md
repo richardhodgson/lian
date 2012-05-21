@@ -57,6 +57,12 @@ Decoupled, lian's `Store` object can be used directly.
 - All asynchronous operations should return a promise.
 - Store provides an in-memory alternative, for testing.
 
+## Install
+
+Install with [npm](http://npmjs.org).
+
+    npm install lian
+
 ## Development [![Build Status](https://secure.travis-ci.org/richardhodgson/lian.png)](http://travis-ci.org/richardhodgson/lian)
 
 Lian uses [monk](https://github.com/LearnBoost/monk) to talk to MongoDB and [promised-io](https://github.com/kriszyp/promised-io) for futures.
