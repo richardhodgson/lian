@@ -4,8 +4,10 @@
     "description": "Simple object persistence with MongoDB",
     "version": "0.0.0",
     "repository": {
-        "url": ""
+        "type" : "git",
+        "url"  : "https://github.com/richardhodgson/lian.git"
     },
+    "homepage": "https://github.com/richardhodgson/lian",
     "main": "lib/lian",
     "scripts": {
         "test": "make test"
