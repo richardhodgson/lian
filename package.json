@@ -6,7 +6,7 @@
     "repository": {
         "url": ""
     },
-    "main": "lian",
+    "main": "lib/lian",
     "scripts": {
         "test": "make test"
     },
