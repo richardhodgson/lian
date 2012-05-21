@@ -3,10 +3,6 @@ var litmus = require('litmus'),
     Store = require('../lib/store'),
     after = require('promised-io/promise').all;
 
-function log (o) {
-    console.log(o);
-}
-
 exports.test = new litmus.Test('Store module tests', function () {
 
     var test = this;
