@@ -15,4 +15,7 @@ mongo-check:
 		echo "Using Mongo running on port 27017..."; \
 	fi
 
+release: test
+	./node_modules/.bin/usenode-release .
+
 .PHONY: test integration-test mongo-check

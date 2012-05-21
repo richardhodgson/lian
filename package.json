@@ -20,6 +20,7 @@
         "monk": ">=0.1.9"
     },
     "devDependencies": {
-        "litmus": ">=0.3.0"
+        "litmus": ">=0.3.0",
+        "usenode-release": ">=0.0.6" 
     }
 }
