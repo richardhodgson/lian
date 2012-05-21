@@ -56,7 +56,7 @@ exports.test = new litmus.Test('Main lian api', function () {
 
     this.async('test decoupled api', function (complete) {
 
-        var Store = require('../lib/store'),
+        var Store = require('../lib/lian').Store,
             lian  = require('../lib/lian');
 
         var store = new Store('localhost');
