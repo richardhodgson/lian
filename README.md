@@ -50,6 +50,27 @@ Decoupled, lian's `Store` object can be used directly.
     var store = new Store('localhost/mydb');
     store.insert(steve);
 
+Easy to mock with in tests, switch to the `lian/lib/mock` module path.
+
+    var lian = require('lian/lib/mock')('localhost/mydb');
+
+    function Person (name) {
+        lian(this, 'person');
+        this.name = name;
+    }
+
+    var john = new Person('John Smith');
+    john.gender = "male";
+
+    // saved in memory
+    john.save().then(function () {
+
+        var john2 = new Person('John Smith');
+        john2.findOne().then(function (result) {
+            result.gender; // "male"
+        });
+    });
+
 ## Goals
 
 - Avoid writing result to object mapping code over and over.
