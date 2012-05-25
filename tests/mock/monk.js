@@ -83,6 +83,17 @@ Collection.prototype.find = function (ob, callback) {
     return promise;
 }
 
+Collection.prototype.findOne = function (ob, callback) {
+    var promise = new Promise(this, 'findOne');
+    promise.complete(callback);
+
+    this.find(ob, function (err, results) {
+        promise.fulfill.call(promise, false, (results.length) ? results[0] : null);
+    });
+
+    return promise;
+}
+
 Collection.prototype.update = function (ob, callback) {
     var promise = new Promise(this, 'update');
     promise.complete(callback);

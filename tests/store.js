@@ -187,4 +187,47 @@ exports.test = new litmus.Test('Store module tests', function () {
             }); 
         });
     });
+
+    test.async('test findOne returns a single result', function (complete) {
+
+        var store = new Store();
+        store.setMonk(new mock_monk());
+
+        function Person () {
+            Person.lian = {name: 'person'};
+        }
+        Person.prototype.getName = function () {
+            return this.name;
+        }
+
+        var jack = new Person(),
+            john = new Person(),
+            jill = new Person();
+
+        jack.name = "jack";
+        john.name = "john";
+        jill.name = "jill";
+
+        after(
+            store.insert(jack),
+            store.insert(john),
+            store.insert(jill)
+        ).then(function () {
+
+            var man = new Person();
+
+            var result = store.findOne(man);
+
+            test.is(typeof result['then'], 'function', 'findOne returns a promise');
+
+            result.then(function (result) {
+                
+                test.isa(result, Person, 'Result is expected type');
+                test.is(result.getName(), 'jack', 'Returned object instance methods are populated');
+
+                complete.resolve();
+            }); 
+        });
+    });
+
 });
