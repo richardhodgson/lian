@@ -1,8 +1,8 @@
 # Todo
 
-- `findOne()`
 - hooks (see below)
 - fix integration tests not finishing properly
+- MockStore for tests
 
 ## Future api
 
