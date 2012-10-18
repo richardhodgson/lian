@@ -1,5 +1,5 @@
 var litmus = require('litmus'),
-    mock_monk = require('./mock/monk');
+    mock_monk = require('../lib/mock/monk');
 
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;

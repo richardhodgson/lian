@@ -35,8 +35,8 @@ Make some changes to persist.
 
 Decoupled, lian's `Store` object can be used directly.
 
-    var Store = require('lian').Store,
-        lian  = require('lian');
+    var lian  = require('lian'),
+        Store = lian.Store;
 
     function Person (name) {
         lian(this, 'person');
@@ -49,6 +49,27 @@ Decoupled, lian's `Store` object can be used directly.
 
     var store = new Store('localhost/mydb');
     store.insert(steve);
+
+Easy to mock with, for testing. Require the `lian/lib/mock` module path instead of `lian`.
+
+    var lian = require('lian/lib/mock')('localhost/mydb');
+
+    function Person (name) {
+        lian(this, 'person');
+        this.name = name;
+    }
+
+    var john = new Person('John Smith');
+    john.gender = "male";
+
+    // saved in memory
+    john.save().then(function () {
+
+        var john2 = new Person('John Smith');
+        john2.findOne().then(function (result) {
+            result.gender; // "male"
+        });
+    });
 
 ## Goals
 

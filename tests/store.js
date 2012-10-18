@@ -1,5 +1,5 @@
 var litmus = require('litmus'),
-    mock_monk = require('./mock/monk'),
+    mock_monk = require('../lib/mock/monk'),
     Store = require('../lib/store'),
     after = require('promised-io/promise').all;
 
