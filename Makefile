@@ -1,5 +1,5 @@
 SHELL = /bin/bash
-MONGO_CHECK = $(shell lsof -i :27017 | grep mongo)
+MONGO_CHECK = $(shell lsof -i :27017 -U | grep mongo)
 
 test:
 	./node_modules/.bin/litmus tests/suite.js
