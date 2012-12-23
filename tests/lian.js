@@ -102,19 +102,23 @@ exports.test = new litmus.Test('Main lian api', function () {
 
         function Shape () {
             lian(this, 'triangle', {
-                'beforeInsert': function () {
+                'beforeInsert': function (ob) {
+                    test.isa(ob, Shape, "callback is passed a reference to the object");
                     test.nok(inserted, 'beforeInsert must return true before insert() will be invoked');
                     return true;
                 },
-                'beforeUpdate': function () {
+                'beforeUpdate': function (ob) {
+                    test.isa(ob, Shape, "callback is passed a reference to the object");
                     test.nok(updated, 'beforeUpdate must return true before update() will be invoked');
                     return true;
                 },
-                'beforeFind': function () {
+                'beforeFind': function (ob) {
+                    test.isa(ob, Shape, "callback is passed a reference to the object");
                     test.nok(found, 'beforeFind must return true before find() will be invoked');
                     return true;
                 },
-                'beforeSave': function () {
+                'beforeSave': function (ob) {
+                    test.isa(ob, Shape, "callback is passed a reference to the object");
                     test.nok(saved, 'beforeSave must return true before save() will be invoked');
                     return true;
                 }
