@@ -1,8 +1,11 @@
 var litmus = require('litmus'),
-    mock_monk = require('../lib/mock/monk');
+    mock_monk = require('../lib/mock/monk'),
+    after = require('promised-io/promise').all;
 
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
+
+    test.plan(28)
 
     var lian = require('../lib/lian')('localhost');
 
@@ -88,5 +91,64 @@ exports.test = new litmus.Test('Main lian api', function () {
                 complete.resolve();
             });
         });
+    });
+
+    test.async('test api hooks', function (complete) {
+
+        var inserted = false,
+            updated  = false,
+            found    = false,
+            saved    = false;
+
+        function Shape () {
+            lian(this, 'triangle', {
+                'beforeInsert': function () {
+                    test.nok(inserted, 'beforeInsert must return true before insert() will be invoked');
+                    return true;
+                },
+                'beforeUpdate': function () {
+                    test.nok(updated, 'beforeUpdate must return true before update() will be invoked');
+                    return true;
+                },
+                'beforeFind': function () {
+                    test.nok(found, 'beforeFind must return true before find() will be invoked');
+                    return true;
+                },
+                'beforeSave': function () {
+                    test.nok(saved, 'beforeSave must return true before save() will be invoked');
+                    return true;
+                }
+            });
+        }
+
+        var triangle = new Shape();
+
+        Shape.lian.getStore().setMonk(new mock_monk());
+
+        triangle.insert().then(function(triangle) {
+
+            inserted = true;
+            test.pass('insert() executed');
+
+            after(
+                triangle.find().then(function() {
+                    found = true;
+                    test.pass('find() executed');
+                }),
+                triangle.update().then(function() {
+                    updated = true;
+                    test.pass('update() executed');
+                }),
+                triangle.save().then(function() {
+                    saved = true;
+                    test.pass('save() executed');
+                })
+            )
+            .then(function () {
+                complete.resolve();
+            });
+        });
+
+
     });
 });

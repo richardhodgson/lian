@@ -5,6 +5,8 @@ var litmus = require('litmus'),
 
 exports.test = new litmus.Test('Store module tests', function () {
 
+    this.plan(24)
+
     var test = this;
 
     var store = new Store();
@@ -229,5 +231,4 @@ exports.test = new litmus.Test('Store module tests', function () {
             }); 
         });
     });
-
 });
