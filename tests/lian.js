@@ -1,11 +1,12 @@
-var litmus = require('litmus'),
+var litmus    = require('litmus'),
     mock_monk = require('../lib/mock/monk'),
-    after = require('promised-io/promise').all;
+    Promise   = require('promised-io/promise').Promise,
+    after     = require('promised-io/promise').all;
 
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(35)
+    test.plan(43)
 
     var lian = require('../lib/lian')('localhost');
 
@@ -194,4 +195,80 @@ exports.test = new litmus.Test('Main lian api', function () {
             });
         });
     });
+    
+    test.async('test before callbacks can return promises', function (complete) {
+
+        var inserted = false,
+            updated  = false,
+            found    = false,
+            saved    = false;
+
+        function Shape () {
+            lian(this, 'triangle', {
+                'before': {
+                    'insert': function (ob) {
+                        var done = new Promise();
+                        setTimeout(function () {
+                            test.nok(inserted, 'Promise must be resolved before insert() is invoked');
+                            done.resolve();
+                        }, 30);
+                        return done;
+                    },
+                    'update': function (ob) {
+                        var done = new Promise();
+                        setTimeout(function () {
+                            test.nok(updated, 'Promise must be resolved before update() is invoked');
+                            done.resolve();
+                        }, 30);
+                        return done;
+                    },
+                    'find': function (ob) {
+                        var done = new Promise();
+                        setTimeout(function () {
+                            test.nok(found, 'Promise must be resolved before find() is invoked');
+                            done.resolve();
+                        }, 30);
+                        return done;
+                    },
+                    'save': function (ob) {
+                        var done = new Promise();
+                        setTimeout(function () {
+                            test.nok(saved, 'Promise must be resolved before save() is invoked');
+                            done.resolve();
+                        }, 30);
+                        return done;
+                    }
+                }
+            });
+        }
+
+        var triangle = new Shape();
+
+        Shape.lian.getStore().setMonk(new mock_monk());
+
+        triangle.insert().then(function(triangle) {
+
+            inserted = true;
+            test.pass('insert() executed');
+
+            after(
+                triangle.find().then(function() {
+                    found = true;
+                    test.pass('find() executed');
+                }),
+                triangle.update().then(function() {
+                    updated = true;
+                    test.pass('update() executed');
+                }),
+                triangle.save().then(function() {
+                    saved = true;
+                    test.pass('save() executed');
+                })
+            )
+            .then(function () {
+                complete.resolve();
+            });
+        });
+    });
+
 });
