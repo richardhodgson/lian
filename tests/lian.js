@@ -5,7 +5,7 @@ var litmus = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(32)
+    test.plan(35)
 
     var lian = require('../lib/lian')('localhost');
 
@@ -152,6 +152,44 @@ exports.test = new litmus.Test('Main lian api', function () {
                 })
             )
             .then(function () {
+                complete.resolve();
+            });
+        });
+    });
+
+    test.async('test before hooks can modify object', function (complete) {
+
+        var inserted = false,
+            updated  = false,
+            found    = false,
+            saved    = false;
+
+        function Shape () {
+
+            lian(this, 'triangle', {
+                'before': {
+                    'insert': function (ob) {
+                        ob.colour = 'red';
+                        return true;
+                    }
+                    
+                }
+            });
+        }
+
+        var triangle = new Shape();
+        triangle.points = 3;
+        triangle.colour = 'green';
+
+        Shape.lian.getStore().setMonk(new mock_monk());
+
+        triangle.insert().then(function() {
+            test.pass('insert() executed');
+            test.is(ob.colour, 'red', "object can be modified by beforeInsert callback");
+
+            var findTriangle = new Shape();
+            findTriangle.find().then(function (result) {
+                test.is(result[0].colour, 'red', 'object was persisted modified');
                 complete.resolve();
             });
         });
