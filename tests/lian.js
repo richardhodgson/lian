@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(43)
+    test.plan(47);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -158,6 +158,90 @@ exports.test = new litmus.Test('Main lian api', function () {
         });
     });
 
+    test.async('test before callbacks can halt operation', function (complete) {
+
+        function Shape () {
+            lian(this, 'shape', {
+                'before': {
+                    'insert': function (ob) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        var triangle = new Shape();
+        Shape.lian.getStore().setMonk(new mock_monk());
+
+        function Shape2 () {
+            lian(this, 'shape2', {
+                'before': {
+                    'update': function (ob) {
+                        return false;
+                    },
+                    'find': function (ob) {
+                        return false;
+                    },
+                    'save': function (ob) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        triangle.insert().then(
+            function(triangle) {
+                test.fail("insert() not halted by before callback");
+            },
+            function () {
+                test.pass('insert() is rejected by before callback');
+
+                var square = new Shape2();
+                Shape2.lian.getStore().setMonk(new mock_monk());
+
+                square.insert().then(function(square) {
+
+                    var callbacksRejected = [new Promise(), new Promise(), new Promise()];
+
+                    square.find().then(
+                        function() {
+                            test.fail("find() not halted by before callback");
+                        },
+                        function () {
+                            test.pass("find() is rejected by before callback");
+                            callbacksRejected[0].resolve();
+                        }
+                    );
+
+                    square.update().then(
+                        function() {
+                            test.fail("update() not halted by before callback");
+                        },
+                        function () {
+                            test.pass("update() is rejected by before callback");
+                            callbacksRejected[1].resolve();
+                        }
+                    );
+
+                    square.save().then(
+                        function() {
+                            test.fail("save() not halted by before callback");
+                        },
+                        function () {
+                            test.pass("save() is rejected by before callback");
+                            callbacksRejected[2].resolve();
+                        }
+                    );
+
+                    after(callbacksRejected).then(function () {
+                        complete.resolve();
+                    });
+                });
+            }
+        );
+
+    });
+
     test.async('test before hooks can modify object', function (complete) {
 
         var inserted = false,
@@ -270,5 +354,4 @@ exports.test = new litmus.Test('Main lian api', function () {
             });
         });
     });
-
 });
