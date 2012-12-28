@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(51);
+    test.plan(55);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -361,7 +361,7 @@ test.async('test before callbacks can return promises and reject', function (com
                 'before': {
                     'insert': function (ob) {
                         var promise = new Promise();
-                        promise.reject();
+                        promise.reject(1);
                         return promise;
                     }
                 }
@@ -376,17 +376,17 @@ test.async('test before callbacks can return promises and reject', function (com
                 'before': {
                     'update': function (ob) {
                         var promise = new Promise();
-                        promise.reject();
+                        promise.reject(2);
                         return promise;
                     },
                     'find': function (ob) {
                         var promise = new Promise();
-                        promise.reject();
+                        promise.reject(3);
                         return promise;
                     },
                     'save': function (ob) {
                         var promise = new Promise();
-                        promise.reject();
+                        promise.reject(4);
                         return promise;
                     }
                 }
@@ -397,8 +397,9 @@ test.async('test before callbacks can return promises and reject', function (com
             function(triangle) {
                 test.fail("insert() not halted by before callback");
             },
-            function () {
+            function (err) {
                 test.pass('insert() is rejected by promise returned by before callback');
+                test.is(err, 1, 'insert() rejected callback is passed expected argument');
 
                 var square = new Shape2();
                 Shape2.lian.getStore().setMonk(new mock_monk());
@@ -411,8 +412,9 @@ test.async('test before callbacks can return promises and reject', function (com
                         function() {
                             test.fail("find() not halted by before callback");
                         },
-                        function () {
+                        function (err) {
                             test.pass("find() is rejected by promise returned by before callback");
+                            test.is(err, 3, 'find() rejected callback is passed expected argument');
                             callbacksRejected[0].resolve();
                         }
                     );
@@ -421,8 +423,9 @@ test.async('test before callbacks can return promises and reject', function (com
                         function() {
                             test.fail("update() not halted by before callback");
                         },
-                        function () {
+                        function (err) {
                             test.pass("update() is rejected by promise returned by before callback");
+                            test.is(err, 2, 'update() rejected callback is passed expected argument');
                             callbacksRejected[1].resolve();
                         }
                     );
@@ -431,8 +434,9 @@ test.async('test before callbacks can return promises and reject', function (com
                         function() {
                             test.fail("save() not halted by before callback");
                         },
-                        function () {
+                        function (err) {
                             test.pass("save() is rejected by promise returned by before callback");
+                            test.is(err, 4, 'save() rejected callback is passed expected argument');
                             callbacksRejected[2].resolve();
                         }
                     );
