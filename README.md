@@ -71,6 +71,36 @@ Easy to mock with, for testing. Require the `lian/lib/mock` module path instead 
         });
     });
 
+Hooks for validation.
+
+    var lian = require('lian')('localhost/mydb');
+
+    function Person (name) {
+        lian(this, 'person', {
+            before: {
+                'insert': function (person) {
+                    // check the person has a gender set
+                    return (person.gender);
+                }
+            }
+        });
+
+        this.name = name;
+    }
+
+    var john = new Person('John Smith');
+
+    john.insert().then(
+        function () {
+            // promise is rejected, see next callback
+        },
+        function () {
+            throw new Error("failed to pass validation");
+        }
+    );
+
+Learn more about [validation](https://github.com/richardhodgson/lian/validation.md).
+
 ## Goals
 
 - Avoid writing result to object mapping code over and over.
