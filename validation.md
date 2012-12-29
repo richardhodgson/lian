@@ -8,7 +8,7 @@ These only work when `lian` adds the shortcut methods to the object. There are n
 
 A `before` callback can return either a `boolean` or a `Promise`. Any other type returned will throw an exception.
 
-## Boolean
+### Boolean
 
 Return `false` to halt an operation, and reject the promise it returns. 
 
@@ -38,7 +38,7 @@ Return `false` to halt an operation, and reject the promise it returns.
         }
     );
 
-## Promise
+### Promise
 
 Promises allow the `before` callback to pass back information to the reject callback passed to the operation.
 
