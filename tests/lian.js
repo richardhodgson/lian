@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(55);
+    test.plan(56);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -29,6 +29,7 @@ exports.test = new litmus.Test('Main lian api', function () {
         test.ok(circle.find, 'Find method mixed in');
         test.ok(circle.save, 'Save method mixed in');
         test.ok(circle.update, 'Update method mixed in');
+        test.ok(circle.findOne, 'findOne method mixed in');
 
         meta.getStore().setMonk(new mock_monk());
 
