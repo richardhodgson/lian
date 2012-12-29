@@ -1,3 +1,3 @@
 # Todo
 
-- fix integration tests not finishing properly
+- add a close() API that will take a Store or mixed-in object.
