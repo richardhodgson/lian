@@ -67,7 +67,7 @@ function integrationTests (test, complete) {
             john.name; // "John Smith"
             john.getGender(); // "male"
 
-            Person.lian.getStore().getMonk().close();
+            Person.lian.close();
             complete.resolve();
         });
     });
