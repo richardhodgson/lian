@@ -86,7 +86,12 @@ Promises allow the `before` callback to pass back information to the reject call
 Lian creates connections to the database which need to be explicitly closed. The connection can be closed using the `close()` method.
 
     var lian = require('lian')('localhost/mydb');
-    lian.close();
+
+    function Shape () {
+        lian(this, 'shape');
+    }
+
+    Shape.lian.close();
 
 The method can also be called directly on the instance of `Store`.
 
