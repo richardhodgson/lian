@@ -6,13 +6,15 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(56);
+    test.plan(58);
 
     var lian = require('../lib/lian')('localhost');
 
     this.is(typeof lian, 'function', 'shorthand api returns function');
 
     this.async('test common api', function (complete) {
+
+        var lian = require('../lib/lian')('localhost');
 
         function Shape () {
             lian(this, 'circle');    
@@ -97,6 +99,8 @@ exports.test = new litmus.Test('Main lian api', function () {
 
     test.async('test api hooks', function (complete) {
 
+        var lian = require('../lib/lian')('localhost');
+
         var inserted = false,
             updated  = false,
             found    = false,
@@ -160,6 +164,8 @@ exports.test = new litmus.Test('Main lian api', function () {
     });
 
     test.async('test before callbacks can halt operation', function (complete) {
+
+        var lian = require('../lib/lian')('localhost');
 
         function Shape () {
             lian(this, 'shape', {
@@ -244,6 +250,8 @@ exports.test = new litmus.Test('Main lian api', function () {
 
     test.async('test before hooks can modify object', function (complete) {
 
+        var lian = require('../lib/lian')('localhost');
+
         var inserted = false,
             updated  = false,
             found    = false,
@@ -281,6 +289,8 @@ exports.test = new litmus.Test('Main lian api', function () {
     });
     
     test.async('test before callbacks can return promises and resolve', function (complete) {
+
+        var lian = require('../lib/lian')('localhost');
 
         var inserted = false,
             updated  = false,
@@ -356,6 +366,8 @@ exports.test = new litmus.Test('Main lian api', function () {
     });
 
 test.async('test before callbacks can return promises and reject', function (complete) {
+
+    var lian = require('../lib/lian')('localhost');
 
         function Shape () {
             lian(this, 'shape', {
@@ -448,5 +460,47 @@ test.async('test before callbacks can return promises and reject', function (com
                 });
             }
         );
+    });
+
+    test.async('close connection shortcut', function (complete) {
+
+        var lian = require('../lib/lian')('localhost');
+
+        function Shape () {
+            lian(this, 'shape');
+        }
+
+        var triangle = new Shape();
+        Shape.lian.getStore().setMonk(new mock_monk());
+
+        triangle.insert().then(function () {
+
+            Shape.lian.close().then(function () {
+                test.pass('connection can be closed from main api')
+                complete.resolve();
+            });
+
+        });
+    });
+
+    test.async('close connection shortcut', function (complete) {
+
+        var lian = require('../lib/lian');
+
+        function Shape () {
+            lian(this, 'shape');
+        }
+
+        new Shape();
+
+        test.throwsOk(
+            function () {
+                Shape.lian.close();
+            },
+            /no store/,
+            'Cannot close a connection without a store instance'
+        );
+
+        complete.resolve();
     });
 });
