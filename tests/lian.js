@@ -365,9 +365,9 @@ exports.test = new litmus.Test('Main lian api', function () {
         });
     });
 
-test.async('test before callbacks can return promises and reject', function (complete) {
+    test.async('test before callbacks can return promises and reject', function (complete) {
 
-    var lian = require('../lib/lian')('localhost');
+        var lian = require('../lib/lian')('localhost');
 
         function Shape () {
             lian(this, 'shape', {
