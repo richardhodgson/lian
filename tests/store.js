@@ -231,4 +231,19 @@ exports.test = new litmus.Test('Store module tests', function () {
             }); 
         });
     });
+
+
+    var mock_connection = new mock_monk(),
+        closed = false;
+
+    mock_connection.close = function () {
+        closed = true;
+    }
+
+    var store = new Store();
+    store.setMonk(mock_connection);
+    store.close();
+
+    test.ok(closed, 'connection was closed');
+
 });
