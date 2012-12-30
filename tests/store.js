@@ -5,7 +5,7 @@ var litmus = require('litmus'),
 
 exports.test = new litmus.Test('Store module tests', function () {
 
-    this.plan(24)
+    this.plan(25);
 
     var test = this;
 
