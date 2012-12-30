@@ -21,7 +21,7 @@ exports.test = new litmus.Test('Store module tests', function () {
             store.insert(Thing);
         },
         /property/,
-        'Inserting something without a $ property throws an error'
+        'Inserting something without a lian property throws an error'
     );
 
     Thing = function () {
