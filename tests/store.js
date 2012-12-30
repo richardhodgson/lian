@@ -232,18 +232,25 @@ exports.test = new litmus.Test('Store module tests', function () {
         });
     });
 
+    test.async('can close connections', function (complete) {
 
-    var mock_connection = new mock_monk(),
-        closed = false;
+        var mock_connection = new mock_monk(),
+            closed = false,
+            wrappedClose = mock_connection.close;
 
-    mock_connection.close = function () {
-        closed = true;
-    }
+        mock_connection.close = function (callback) {
+            closed = true;
+            wrappedClose(callback);
+        }
 
-    var store = new Store();
-    store.setMonk(mock_connection);
-    store.close();
+        var store = new Store();
+        store.setMonk(mock_connection);
 
-    test.ok(closed, 'connection was closed');
+        store.close().then(function () {
+            test.ok(closed, 'connection was closed');
+            complete.resolve();
+        });
+    });
+
 
 });
