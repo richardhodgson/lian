@@ -1,3 +1,4 @@
 # Todo
 
-- add a close() API that will take a Store or mixed-in object.
+- delete() an object
+- count() an object
