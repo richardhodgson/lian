@@ -5,7 +5,7 @@ var litmus = require('litmus'),
 
 exports.test = new litmus.Test('Store module tests', function () {
 
-    this.plan(25);
+    this.plan(27);
 
     var test = this;
 
@@ -252,5 +252,68 @@ exports.test = new litmus.Test('Store module tests', function () {
         });
     });
 
+    test.async('test count all objects', function (complete) {
 
+        var store = new Store();
+        store.setMonk(new mock_monk());
+
+        function Person () {
+            Person.lian = {name: 'person'};
+        }
+
+        var jack = new Person(),
+            john = new Person(),
+            jill = new Person();
+
+        jack.name = "jack";
+        john.name = "john";
+        jill.name = "jill";
+
+        after(
+            store.insert(jack),
+            store.insert(john),
+            store.insert(jill)
+        ).then(function () {
+
+            store.count(new Person()).then(function (count) {
+                test.is(count, 3, 'Can count all the items in store');
+                complete.resolve();
+            });
+
+        });
+    });
+
+    test.async('test count some objects', function (complete) {
+
+        var store = new Store();
+        store.setMonk(new mock_monk());
+
+        function Person () {
+            Person.lian = {name: 'person'};
+        }
+
+        var jack = new Person(),
+            john = new Person(),
+            jill = new Person();
+
+        jack.gender = "male";
+        john.gender = "male";
+        jill.gender = "female";
+
+        after(
+            store.insert(jack),
+            store.insert(john),
+            store.insert(jill)
+        ).then(function () {
+
+            var person = new Person();
+            person.gender = "male";
+
+            store.count(person).then(function (count) {
+                test.is(count, 2, 'Can count only items that match projection');
+                complete.resolve();
+            });
+
+        });
+    });
 });
