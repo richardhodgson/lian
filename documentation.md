@@ -95,8 +95,29 @@ Lian creates connections to the database which need to be explicitly closed. The
 
 The method can also be called directly on the instance of `Store`.
 
-
     var Store = require('lian').Store;
 
     var store = new Store('localhost/mydb');
     store.close();
+
+## Count
+
+Persisted objects can be counted.
+
+    function Shape () {
+        lian(this, 'shape');
+    }
+
+    var shape = new Shape();
+
+    shape.count().then(function (count) {
+        // count is the total number of 'shape' objects found.
+    });
+
+Setting attributes filters the objects that will be counted.
+
+    shape.colour = 'green';
+    shape.count().then(function (count) {
+        // count is the number of 'shape' objects with 'colour' set to 'green'.
+    });
+
