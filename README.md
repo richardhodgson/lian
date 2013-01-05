@@ -2,6 +2,18 @@
 
 Simple object persistence for node.js with MongoDB.
 
+## tl;dr
+
+I wanted something more involved than just a DB driver but I didn't want to define a schema or similar meta object.
+
+I also only want to work with the objects I define - if I've saved a `Person` object, when I invoke a find operation it should return an array of `Person` objects.
+
+Finally, writing tests for projects that use MongoDB should be easy and not rely on a connection to a DB instance.
+
+See the other [goals](#goals).
+
+## Examples
+
     var lian = require('lian')('localhost/mydb');
 
     function Person (name) {
@@ -110,7 +122,7 @@ Learn more about [validation](https://github.com/richardhodgson/lian/blob/master
 
 ## Install
 
-Install with [npm](http://npmjs.org).
+Install with [npm](https://npmjs.org/package/lian).
 
     npm install lian
 
