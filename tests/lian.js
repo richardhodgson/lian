@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(74);
+    test.plan(77);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -22,6 +22,10 @@ exports.test = new litmus.Test('Main lian api', function () {
 
         var shape = new Shape();
         test.ok(Shape.lian, 'lian is added to object');
+
+        test.isa(Shape.count, Function, 'Static count method is mixed in');
+        test.isa(Shape.find, Function, 'Static find method is mixed in');
+        test.isa(Shape.findOne, Function, 'Static findOne method is mixed in');
 
         var meta = Shape.lian;
         test.is(meta.name, 'shape', 'name is set on Meta class');
