@@ -111,7 +111,7 @@ Hooks for validation.
         }
     );
 
-Learn more about [validation](https://github.com/richardhodgson/lian/blob/master/documentation.md#validation).
+Learn more about [validation](https://github.com/richardhodgson/lian/blob/master/documentation.md#validation) or [read more documentation](https://github.com/richardhodgson/lian/blob/master/documentation.md).
 
 ## Goals
 
