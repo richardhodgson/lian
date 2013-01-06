@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(71);
+    test.plan(74);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -519,6 +519,11 @@ exports.test = new litmus.Test('Main lian api', function () {
         test.isa(Shape.count, Function, 'Static count method is mixed in');
         test.isa(Shape.find, Function, 'Static find method is mixed in');
         test.isa(Shape.findOne, Function, 'Static findOne method is mixed in');
+
+        // just checking
+        test.nok(Shape.insert, 'Instance only insert method is not mixed in');
+        test.nok(Shape.update, 'Instance only insert method is not mixed in');
+        test.nok(Shape.save, 'Instance only insert method is not mixed in');
 
         var shape = new Shape();
 
