@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(59);
+    test.plan(71);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -17,50 +17,50 @@ exports.test = new litmus.Test('Main lian api', function () {
         var lian = require('../lib/lian')('localhost');
 
         function Shape () {
-            lian(this, 'circle');    
+            lian(this, 'shape');    
         }
 
-        var circle = new Shape();
+        var shape = new Shape();
         test.ok(Shape.lian, 'lian is added to object');
 
         var meta = Shape.lian;
-        test.is(meta.name, 'circle', 'name is set on Meta class');
+        test.is(meta.name, 'shape', 'name is set on Meta class');
         test.ok(meta.getStore(), 'meta has a store from shorthand constructor');
 
-        test.ok(circle.insert, 'Insert method mixed in');
-        test.ok(circle.find, 'Find method mixed in');
-        test.ok(circle.save, 'Save method mixed in');
-        test.ok(circle.update, 'Update method mixed in');
-        test.ok(circle.findOne, 'findOne method mixed in');
-        test.ok(circle.count, 'count method mixed in');
+        test.ok(shape.insert, 'Insert method mixed in');
+        test.ok(shape.find, 'Find method mixed in');
+        test.ok(shape.save, 'Save method mixed in');
+        test.ok(shape.update, 'Update method mixed in');
+        test.ok(shape.findOne, 'findOne method mixed in');
+        test.ok(shape.count, 'count method mixed in');
 
         meta.getStore().setMonk(new mock_monk());
 
-        circle.insert().then(function () {
+        shape.insert().then(function () {
 
-            var circle2 = new Shape();
+            var shape2 = new Shape();
 
-            circle2.find().then(function (results) {
+            shape2.find().then(function (results) {
                 test.is(results.length, 1, 'found the inserted object');
                 test.isa(results[0], Shape, 'result instances are mapped to original objects');
                 complete.resolve();
             });
         });
 
-
-        function Car () {
-            lian(this, 'car');
-        }
-        Car.prototype.insert = function() {};
-
-        test.throwsOk(
-            function () {
-                new Car();
-            },
-            /already defined/,
-            'Cannot add mixin methods if one is already defined'
-        );
     });
+
+    function Car () {
+        lian(this, 'car');
+    }
+    Car.prototype.insert = function() {};
+
+    test.throwsOk(
+        function () {
+            new Car();
+        },
+        /already defined/,
+        'Cannot add mixin methods if one is already defined'
+    );
 
     this.async('test decoupled api', function (complete) {
 
@@ -504,5 +504,36 @@ exports.test = new litmus.Test('Main lian api', function () {
 
         complete.resolve();
     });
+    
+    test.async('test static mixins', function (complete) {
 
+        var lian = require('../lib/lian')('localhost');
+
+        function Shape () {
+        }
+
+        lian(Shape, 'shape');    
+
+        test.ok(Shape.lian, 'lian is added to object');
+
+        test.isa(Shape.count, Function, 'Static count method is mixed in');
+        test.isa(Shape.find, Function, 'Static find method is mixed in');
+        test.isa(Shape.findOne, Function, 'Static findOne method is mixed in');
+
+        var shape = new Shape();
+
+        var meta = Shape.lian;
+        test.is(meta.name, 'shape', 'name is set on Meta class');
+        test.ok(meta.getStore(), 'meta has a store from shorthand constructor');
+
+        test.ok(shape.insert, 'Insert method mixed in');
+        test.ok(shape.find, 'Find method mixed in');
+        test.ok(shape.save, 'Save method mixed in');
+        test.ok(shape.update, 'Update method mixed in');
+        test.ok(shape.findOne, 'findOne method mixed in');
+        test.ok(shape.count, 'count method mixed in');
+
+        complete.resolve();
+
+    });
 });
