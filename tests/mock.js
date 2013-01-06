@@ -1,8 +1,11 @@
-var litmus = require('litmus'),
-    mock_monk = require('../lib/mock/monk');
+var litmus    = require('litmus'),
+    mock_monk = require('../lib/mock/monk'),
+    after     = require('promised-io/promise').all;
 
 exports.test = new litmus.Test('Mock lian api, for using with tests', function () {
     var test = this;
+
+    test.plan(14);
 
     var lian = require('../lib/mock')('localhost'),
         mockStore = require('../lib/mock').Store;
@@ -38,8 +41,38 @@ exports.test = new litmus.Test('Mock lian api, for using with tests', function (
                 complete.resolve();
             });
         });
+    });
 
+    this.async('test multiple objects can be persisted in memory', function (complete) {
 
+        var lian = require('../lib/mock')('localhost');
+
+        function Book () {
+            lian(this, 'book');
+        }
+
+        var book = new Book();
+
+        Book.count().then(function (count) {
+            test.is(count, 0, 'mock is empty');
+
+            book.insert().then(function () {
+
+                Book.count().then(function (count) {
+                    test.is(count, 1, 'first item is persisted');
+
+                    var book2 = new Book();
+                    book2.insert().then(function () {
+                        
+                        Book.count().then(function (count) {
+                            test.is(count, 2, 'another item is persisted and counted');
+
+                            complete.resolve();
+                        });
+                    });
+                });
+            });
+        });
     });
 
 });
