@@ -13,7 +13,7 @@
         "test": "make test"
     },
     "engines": {
-        "node": "~0.4.7"
+        "node": ">=0.4.7"
     },
     "dependencies": {
         "promised-io": ">=0.3.0",
