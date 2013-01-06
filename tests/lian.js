@@ -526,12 +526,12 @@ exports.test = new litmus.Test('Main lian api', function () {
         test.is(meta.name, 'shape', 'name is set on Meta class');
         test.ok(meta.getStore(), 'meta has a store from shorthand constructor');
 
-        test.ok(shape.insert, 'Insert method mixed in');
-        test.ok(shape.find, 'Find method mixed in');
-        test.ok(shape.save, 'Save method mixed in');
-        test.ok(shape.update, 'Update method mixed in');
-        test.ok(shape.findOne, 'findOne method mixed in');
-        test.ok(shape.count, 'count method mixed in');
+        test.isa(shape.insert, Function, 'Insert method mixed in');
+        test.isa(shape.find, Function, 'Find method mixed in');
+        test.isa(shape.save, Function, 'Save method mixed in');
+        test.isa(shape.update, Function, 'Update method mixed in');
+        test.isa(shape.findOne, Function, 'findOne method mixed in');
+        test.isa(shape.count, Function, 'count method mixed in');
 
         complete.resolve();
 
