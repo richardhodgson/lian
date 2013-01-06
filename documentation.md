@@ -1,5 +1,47 @@
 # Lian
 
+## Annotating objects
+
+Lian uses a meta object to describe your objects in order to persist them with it's `Store`.
+
+This meta object is added using the function returned when `require()`ing Lian. This factory method comes in two flavours, with a predefined `Store` and without.
+
+With a `Store` for the DB at 'localhost/mydb', use:
+
+    var lian = require('lian')('localhost/mydb');
+
+For those wanting to dealing with the `Store` themselves, try:
+
+    var lian = require('lian');
+
+Both have now reference `lian` with a factory method that will create a meta object for your objects. This can be used with any object that does not already define the 'lian' key.
+
+If your `lian` factory was referenced using the first example (with the 'localhost/mydb' DB string), then Lian will also add shortcut methods to the operations provided by their `Store` instance.
+
+    function Book () {
+        lian(this, 'book');
+    }
+
+    var book = new Book();
+    typeof book.insert // 'function'
+
+In the example above, the `lian` factory is invoked only when the `Book` function is instantiated. The factory will also accept a function, adding these shortcut methods to the `prototype`.
+
+    function Book () {
+    }
+    lian(Book, 'book');
+
+    var book = new Book();
+    typeof book.insert // 'function'
+
+In both cases, the factory method will also add some static shortcut methods, for example:
+
+    function Book () {
+    }
+    lian(Book, 'book');
+
+    typeof Book.count // 'function'    
+
 ## Validation
 
 Lian provides hooks for validation an object before changes to it are persisted.
