@@ -5,7 +5,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Mock lian api, for using with tests', function () {
     var test = this;
 
-    test.plan(14);
+    test.plan(18);
 
     var lian = require('../lib/mock')('localhost'),
         mockStore = require('../lib/mock').Store;
@@ -74,5 +74,56 @@ exports.test = new litmus.Test('Mock lian api, for using with tests', function (
             });
         });
     });
+
+    test.async('test mock find', function (complete) {
+
+        function Book () {
+            lian(this, 'book');
+        }
+
+        var book = new Book();
+        book.title = "To kill a mockingbird";
+        book.author = "Harper Lee";
+
+        book.insert().then(function () {
+
+            var book2 = new Book();
+            book2.title = "To kill a mockingbird";
+
+            book2.findOne().then(function (book3) {
+                test.isa(book3, Book, 'Inserted book is found based on title.');
+                test.is(book3.author, 'Harper Lee', 'Author key is from mock store');
+
+                complete.resolve();
+            });
+        });
+    });
+
+    test.async('test mock find with nulls', function (complete) {
+
+        function Book () {
+            lian(this, 'book');
+            this.author = null;
+        }
+
+        var book = new Book();
+        book.title = "To kill a mockingbird";
+        book.author = "Harper Lee";
+
+        book.insert().then(function () {
+
+            var book2 = new Book();
+            book2.title = "To kill a mockingbird";
+
+            book2.findOne().then(function (book3) {
+                test.ok(book3, 'Inserted book is found based on title.');
+                test.is(book3.author, 'Harper Lee', 'Author key is from mock store');
+
+                complete.resolve();
+            });
+        });
+    });
+
+
 
 });
