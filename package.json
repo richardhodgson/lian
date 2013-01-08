@@ -2,7 +2,7 @@
     "author": "Richard Hodgson <contact@rhodgson.co.uk> (http://rhodgson.co.uk)",
     "name": "lian",
     "description": "Simple object persistence with MongoDB",
-    "version": "0.10.0",
+    "version": "0.10.1",
     "repository": {
         "type" : "git",
         "url"  : "https://github.com/richardhodgson/lian.git"
