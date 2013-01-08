@@ -5,7 +5,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Mock lian api, for using with tests', function () {
     var test = this;
 
-    test.plan(18);
+    test.plan(20);
 
     var lian = require('../lib/mock')('localhost'),
         mockStore = require('../lib/mock').Store;
@@ -123,6 +123,36 @@ exports.test = new litmus.Test('Mock lian api, for using with tests', function (
             });
         });
     });
+
+    test.async('test mock can find multiple times', function (complete) {
+
+        function Book () {
+            lian(this, 'book');
+            this.author = null;
+        }
+
+        var book = new Book();
+        book.title = "To kill a mockingbird";
+        book.author = "Harper Lee";
+
+        book.insert().then(function () {
+
+            var book2 = new Book();
+            book2.title = "To kill a mockingbird";
+
+            Book.findOne().then(function (book2) {
+                test.ok(book2, 'Inserted book is found with static method.');
+                
+                Book.findOne().then(function (book3) {
+                    test.ok(book3, 'Inserted book is found again.');
+                });
+
+                complete.resolve();
+            });
+        });
+    });
+
+
 
 
 
