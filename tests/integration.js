@@ -64,11 +64,26 @@ function integrationTests (test, complete) {
             test.pass('Can find from the Store');
 
             john = results[0];
-            john.name; // "John Smith"
-            john.getGender(); // "male"
+            test.is(john.name, 'John Smith', 'Name property populated');
+            test.is(john.getGender(), 'male', 'accessor method returns expected value');
 
-            Person.lian.close();
-            complete.resolve();
+            john.name = "John Anthony Smith";
+            john.save().then(function (john) {
+
+                test.pass('can save to the store');
+                test.is(john.getGender(), 'male', 'save promise is resolved with expected populated object');
+
+                john = new Person('John Anthony Smith');
+                john.findOne().then(function (john) {
+
+                    test.pass('can findOne from the store');
+
+                    Person.lian.close();
+                    complete.resolve();
+                });
+
+            });
+
         });
     });
 }

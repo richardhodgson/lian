@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(77);
+    test.plan(80);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -45,12 +45,29 @@ exports.test = new litmus.Test('Main lian api', function () {
             var shape2 = new Shape();
 
             shape2.find().then(function (results) {
+
                 test.is(results.length, 1, 'found the inserted object');
                 test.isa(results[0], Shape, 'result instances are mapped to original objects');
-                complete.resolve();
+
+                shape2 = results[0];
+                shape2.colour = 'orange';
+                shape2.points = 3;
+
+                shape2.update().then(function (shape3) {
+                    test.isa(shape3, Shape, 'update promise resolved with object');
+
+                    var shape4 = new Shape();
+                    shape4.colour = 'orange';
+
+                    shape4.findOne().then(function (shape5) {
+                        test.isa(shape5, Shape, 'findOne promise resolved with object');
+                        test.is(shape5.points, 3, 'update saves to store');
+
+                        complete.resolve();
+                    });
+                });
             });
         });
-
     });
 
     function Car () {
