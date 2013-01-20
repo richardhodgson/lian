@@ -5,7 +5,7 @@ var litmus = require('litmus'),
 
 exports.test = new litmus.Test('Store module tests', function () {
 
-    this.plan(27);
+    this.plan(28);
 
     var test = this;
 
@@ -315,5 +315,36 @@ exports.test = new litmus.Test('Store module tests', function () {
             });
 
         });
+    });
+
+    test.async('can specify unique index for object', function (complete) {
+
+        var store = new Store();
+        store.setMonk(new mock_monk());
+
+        function Colour (name) {
+            Colour.lian = {name: 'colour'};
+            this.name = name;
+        }
+
+        store.createIndex(new Colour(), 'name', 'unique');
+
+        var red = new Colour("red");
+
+        store.insert(red).then(function () {
+
+            store.insert(red).then(
+                function () {
+                    test.fail('was able to insert multiple times despite unique index');
+                    complete.resolve();
+                },
+                function () {
+                    test.pass('failed to insert multiple times due to unique index');
+                    complete.resolve();
+                }
+            );
+
+        });
+
     });
 });
