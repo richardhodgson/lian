@@ -323,16 +323,15 @@ exports.test = new litmus.Test('Store module tests', function () {
         store.setMonk(new mock_monk());
 
         function Colour (name) {
-            Colour.lian = {name: 'colour'};
             this.name = name;
         }
+        Colour.lian = {name: 'colour'};
 
-        store.createIndex(new Colour(), 'name', 'unique');
+        store.createIndex(Colour, 'name', 'unique');
 
         var red = new Colour("red");
 
         store.insert(red).then(function () {
-
             store.insert(red).then(
                 function () {
                     test.fail('was able to insert multiple times despite unique index');
@@ -343,8 +342,6 @@ exports.test = new litmus.Test('Store module tests', function () {
                     complete.resolve();
                 }
             );
-
         });
-
     });
 });
