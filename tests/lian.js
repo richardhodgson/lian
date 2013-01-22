@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(80);
+    test.plan(81);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -17,7 +17,7 @@ exports.test = new litmus.Test('Main lian api', function () {
         var lian = require('../lib/lian')('localhost');
 
         function Shape () {
-            lian(this, 'shape');    
+            lian(this, 'shape');
         }
 
         var shape = new Shape();
@@ -533,7 +533,7 @@ exports.test = new litmus.Test('Main lian api', function () {
         function Shape () {
         }
 
-        lian(Shape, 'shape');    
+        lian(Shape, 'shape');
 
         test.ok(Shape.lian, 'lian is added to object');
 
@@ -560,6 +560,31 @@ exports.test = new litmus.Test('Main lian api', function () {
         test.isa(shape.count, Function, 'count method mixed in');
 
         complete.resolve();
+
+    });
+
+    test.async('test index options are passed to store', function (complete) {
+
+        // need the lian mock here due to indexes being added during Meta instantiation.
+        var lian = require('../lib/mock')('localhost');
+
+        function Colour (name) {
+            lian(this, 'colour', {unique: ['name']});
+            this.name = name;
+        }
+        
+        new Colour("orange").insert().then(function () {
+            new Colour("orange").insert().then(
+                function () {
+                    test.fail('was able to insert multiple times despite unique index');
+                    complete.resolve();
+                },
+                function () {
+                    test.pass('unique indexes can be specified with lian meta factory');
+                    complete.resolve();
+                }
+            );
+        });
 
     });
 });
