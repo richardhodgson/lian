@@ -1,11 +1,12 @@
-var litmus = require('litmus'),
+var litmus    = require('litmus'),
     mock_monk = require('../lib/mock/monk'),
-    Store = require('../lib/store'),
-    after = require('promised-io/promise').all;
+    Store     = require('../lib/store'),
+    after     = require('promised-io/promise').all,
+    Promise   = require('promised-io/promise').Promise;
 
 exports.test = new litmus.Test('Store module tests', function () {
 
-    this.plan(28);
+    this.plan(31);
 
     var test = this;
 
@@ -342,6 +343,55 @@ exports.test = new litmus.Test('Store module tests', function () {
                     complete.resolve();
                 }
             );
+        });
+    });
+
+    test.async('consumers can control operations based on a promise', function (complete) {
+
+        var store = new Store();
+        store.setMonk(new mock_monk());
+
+        function Colour (name) {
+            this.name = name;
+        }
+        Colour.lian = {name: 'colour'};
+
+        var customReady = new Promise(),
+            isReady     = false,
+            inserted    = false;
+
+        store.setReady(customReady);
+
+        store.insert(new Colour("lime")).then(function () {
+            if (isReady) {
+                inserted = true;
+                test.pass('inserted after custom ready promise was resolved');
+            }
+            else {
+                test.fail('inserted before custom ready promise was resolved');
+            }
+        });
+
+        store.find(new Colour("lime")).then(function () {
+            if (isReady) {
+                test.pass('found after custom ready promise was resolved');
+
+                if (inserted) {
+                    test.pass('operations are executed in call order');
+                }
+                else {
+                    test.fail('operations executed out of call order');
+                }
+            }
+            else {
+                test.fail('found before custom ready promise was resolved');
+            }
+            complete.resolve();
+        });
+
+        process.nextTick(function () {
+            isReady = true;
+            customReady.resolve();
         });
     });
 });
