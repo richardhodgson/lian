@@ -30,11 +30,36 @@ function tearDown () {
 
 function cleanDb () {
     var ready      = new Promise(),
-        collection = db.get('person');
+        collections = ['person', 'colour'],
+        wait        = collections.length;
 
-    collection.drop(function (err, doc) {
-        ready.resolve();
-    });
+    var dropCollection = function (name) {
+        db.get(name).drop(function (err, doc) {
+            wait--;
+        })
+    }
+
+    for (var i = 0; i < collections.length; i++) {
+        dropCollection(collections[i]);
+    }
+
+    var timeout = setTimeout(
+        function () {
+            throw new Error('clean up timed out');
+        },
+        3000
+    );
+
+    var check = setInterval(
+        function () {
+            if (wait == 0) {
+                clearTimeout(timeout);
+                clearTimeout(check);
+                ready.resolve();
+            }
+        },
+        100
+    );
     return ready;
 }
 
