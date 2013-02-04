@@ -104,11 +104,35 @@ function integrationTests (test, complete) {
                     test.pass('can findOne from the store');
 
                     Person.lian.close();
-                    complete.resolve();
+
+
+                    function Colour (name) {
+                        lian(this, 'colour', {unique: ['name']});
+                        this.name = name;
+                    }
+        
+                    new Colour("orange").insert().then(function () {
+
+                        new Colour("orange").insert().then(
+                            function () {
+                                test.fail('was able to insert multiple times despite unique index');
+                                Colour.lian.close();
+                                complete.resolve();
+                            },
+                            function () {
+                                test.pass('unique indexes can be specified with lian meta factory');
+                                Colour.lian.close();
+                                complete.resolve();
+                            }
+                        );
+                        
+                    });
                 });
 
             });
 
         });
     });
+
+
 }
