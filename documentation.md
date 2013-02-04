@@ -163,3 +163,37 @@ Setting attributes filters the objects that will be counted.
         // count is the number of 'shape' objects with 'colour' set to 'green'.
     });
 
+## Indexes
+
+Lian supports defining properties on your object as unique indexes.
+
+    function Colour (name) {
+        lian(this, 'colour', {unique: ['name']});
+
+        this.name = name;
+    }
+
+    new Colour("red").insert();
+    new Colour("red").insert(); // will fail
+
+If a property is defined as an unique index, but not defined on the object when persisting it, MongoDB will consider this as `null`. As this still qualifies as a value, only one object without this property is allowed to be inserted. Multiple `null` entries for the same property would invalidate the index.
+
+When using the decoupled `Store` approach, indexes will need to be manually defined.
+
+    var lian  = require('lian'),
+        Store = lian.Store;
+    
+    function Colour (name) {
+        lian(this, 'colour');
+
+        this.name = name;
+    }
+
+    var store = new Store('localhost/mydb');
+
+    store.createIndex(Colour, 'name', 'unique');
+
+    store.insert(new Colour("red"));
+    store.insert(new Colour("red")); // will fail
+
+As the store is decoupled from the object it is persisting, it allows more control over when the index is created by your application (e.g. during start up).

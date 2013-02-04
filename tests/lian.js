@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 exports.test = new litmus.Test('Main lian api', function () {
     var test = this;
 
-    test.plan(80);
+    test.plan(86);
 
     var lian = require('../lib/lian')('localhost');
 
@@ -17,7 +17,7 @@ exports.test = new litmus.Test('Main lian api', function () {
         var lian = require('../lib/lian')('localhost');
 
         function Shape () {
-            lian(this, 'shape');    
+            lian(this, 'shape');
         }
 
         var shape = new Shape();
@@ -533,7 +533,7 @@ exports.test = new litmus.Test('Main lian api', function () {
         function Shape () {
         }
 
-        lian(Shape, 'shape');    
+        lian(Shape, 'shape');
 
         test.ok(Shape.lian, 'lian is added to object');
 
@@ -559,7 +559,55 @@ exports.test = new litmus.Test('Main lian api', function () {
         test.isa(shape.findOne, Function, 'findOne method mixed in');
         test.isa(shape.count, Function, 'count method mixed in');
 
-        complete.resolve();
+        Shape.lian.getStore().setMonk(new mock_monk());
+
+        shape.colour = 'lime';
+        shape.insert().then(function (shape2) {
+            test.is(shape2.colour, 'lime', 'insert operation returns persisted object');
+
+            var shape3 = new Shape();
+            shape3.colour = 'lime';
+
+            after(
+                Shape.find().then(function (results) {
+                    test.is(results.length, 1, "One shape is found with static find() method");
+                    test.isa(results[0], Shape, "Results are populate with objects of expected type");
+                }),
+                shape3.find().then(function (results) {
+                    test.is(results.length, 1, "One shape is found with instance find() method");
+                    test.isa(results[0], Shape, "Results are populate with objects of expected type");
+                })
+            ).then(function () {
+                complete.resolve();
+            });
+
+        });
 
     });
+
+    test.async('test index options are passed to store', function (complete) {
+
+        // need the lian mock here due to indexes being added during Meta instantiation.
+        var lian = require('../lib/mock')('localhost');
+
+        function Colour (name) {
+            lian(this, 'colour', {unique: ['name']});
+            this.name = name;
+        }
+        
+        new Colour("orange").insert().then(function () {
+            new Colour("orange").insert().then(
+                function () {
+                    test.fail('was able to insert multiple times despite unique index');
+                    complete.resolve();
+                },
+                function () {
+                    test.pass('unique indexes can be specified with lian meta factory');
+                    complete.resolve();
+                }
+            );
+        });
+
+    });
+
 });
