@@ -6,7 +6,7 @@ var litmus    = require('litmus'),
 
 exports.test = new litmus.Test('Store module tests', function () {
 
-    this.plan(31);
+    this.plan(32);
 
     var test = this;
 
@@ -319,7 +319,6 @@ exports.test = new litmus.Test('Store module tests', function () {
     });
 
     test.async('can specify unique index for object', function (complete) {
-
         var store = new Store();
         store.setMonk(new mock_monk());
 
@@ -344,6 +343,39 @@ exports.test = new litmus.Test('Store module tests', function () {
                 }
             );
         });
+    });
+
+    test.async('problems creating index reject the promise', function (complete) {
+
+        var store = new Store();
+
+        var mockMonk= new mock_monk()
+        store.setMonk(mockMonk);
+
+        mockMonk.get('colour').index = function (property, type, callback) {
+            var Promise = require('monk/lib/promise'),
+                promise = new Promise(this, 'index');
+            promise.complete(callback);
+            promise.fulfill.call(promise, {'err': 'something bad happened'}, undefined);
+            return promise;
+        }
+
+        function Colour (name) {
+            this.name = name;
+        }
+        Colour.lian = {name: 'colour'};
+
+        store.createIndex(Colour, 'name', 'unique').then(
+            function () {
+                test.fail('was able to insert multiple times despite unique index');
+                complete.resolve();
+            },
+            function () {
+                test.pass('failed to insert multiple times due to unique index');
+                complete.resolve(   );
+            }
+        );
+
     });
 
     test.async('consumers can control operations based on a promise', function (complete) {
